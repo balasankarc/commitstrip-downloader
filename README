@@ -1,7 +1,6 @@
 A small script to download images from http://commitstrip.com.
 
-usage: python commitstrip.py [-h] [-v] [-ps PAGESTART] [-pe PAGEEND]
-                      language outputdir
+usage: python commitstrip.py [-h] [-v] [-ps PAGESTART] [-pe PAGEEND] language outputdir
 
 positional arguments:
   language
