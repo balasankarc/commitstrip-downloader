@@ -1,0 +1,25 @@
+A small script to download images from http://commitstrip.com.
+
+usage: python commitstrip.py [-h] [-v] [-ps PAGESTART] [-pe PAGEEND]
+                      language outputdir
+
+positional arguments:
+  language
+       Specify the language - en or fr
+  outputdir
+       Specify the output directory
+
+optional arguments:
+  -h, --help
+       show this help message and exit
+  -v, --verbosity
+       Print download url
+  -ps PAGESTART, --pagestart PAGESTART
+       Specify starting page number
+  -pe PAGEEND, --pageend PAGEEND
+       Sprcify ending page number
+
+License: 2015 Balasankar C <balasankarc@autistici.org>
+Released under GNU GPLv3+
+
+Note : Images that are getting downloaded are the property of http://www.commitstrip.com.
