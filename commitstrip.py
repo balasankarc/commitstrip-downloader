@@ -15,11 +15,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import re
 import urllib
 import os
 import argparse
 import sys
+import lxml.html
+import urlparse
+
+
+def encodeurl(url):
+    s, a, p, q, f = urlparse.urlsplit(url)
+    p = urllib.quote(p.encode('utf8'))
+    return str(urlparse.urlunsplit((s, a, p, q, f)))
+
 
 parser = argparse.ArgumentParser(description='Download commistrip images',
                                  formatter_class=lambda prog:
@@ -44,23 +52,22 @@ if args.pageend:
     pageend = int(args.pageend)
 if not os.path.exists(args.outputdir):
     os.mkdir(args.outputdir)
-for pagecount in range(pagestart, pageend+1):
-    page = urllib.urlopen(baseurl + str(pagecount))
-    pagecontenthtml = page.read()
-    page.close()
-    imageline = re.findall(
-        '<img class=".* size-full.*>', pagecontenthtml)
-    if len(imageline) == 0:
-        imageline = re.findall('<p><img.*>', pagecontenthtml)
-    resultline = imageline[0]
-    srcurl = re.findall('src=".*?"', resultline)
-    imageurl = str(srcurl[0][5:-1])
-    indexpos = imageurl[::-1].index('/')
-    filename = imageurl[-indexpos:]
-    if os.path.isfile(args.outputdir + "/" + filename):
+for pagecount in range(pagestart, pageend + 1):
+    try:
+        page = baseurl + str(pagecount)
+        test = lxml.html.parse(page)
+        imageUrlset = test.xpath(
+            '//img[contains(@class, "size-full")]/@src')
+        imageurl = imageUrlset[0]
+        indexpos = imageurl[::-1].index('/')
+        filename = imageurl[-indexpos:]
+        if os.path.isfile(args.outputdir + "/" + filename):
+            continue
+        if args.verbosity:
+            print "Page #" + str(pagecount) + "     : " + imageurl
+        imageurl = encodeurl(imageurl)
+        urllib.urlretrieve(
+            imageurl,
+            filename=args.outputdir + "/" + filename)
+    except:
         continue
-    if args.verbosity:
-        print "Page #" + str(pagecount) + "     : " + imageurl
-    urllib.urlretrieve(
-        imageurl,
-        filename=args.outputdir + "/" + filename)
